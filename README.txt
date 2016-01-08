@@ -1,4 +1,4 @@
-Usul
+Usul - "the strength of the base of the pillar"
 
 Requires:
 
