@@ -28,19 +28,18 @@ func compileHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	defer os.Remove(file.Name())
 
-	output := make(chan []byte)
-	go run(lang, file, output)
-	out := <-output
-	close(output)
+	output, err := run(lang, file)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
 
 	w.WriteHeader(http.StatusOK)
-	w.Write(out)
+	w.Write(output)
 }
 
 func saveToFile(lang, code string) (*os.File, error) {
-	name := getFileName(lang)
-
-	file, err := os.Create(fmt.Sprintf("%s/%s", filePath, name))
+	file, err := os.Create(fmt.Sprintf("%s/%s", filePath, getFileName(lang)))
 	if err != nil {
 		return nil, err
 	}
@@ -78,21 +77,20 @@ func getExtension(lang string) string {
 	return ext
 }
 
-func run(lang string, file *os.File, output chan []byte) error {
+func run(lang string, file *os.File) ([]byte, error) {
 	opts, err := getCommandOptions(lang, file)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	fmt.Printf("%s> docker %s\n", containerName, strings.Join(opts, " "))
 
-	out, err := exec.Command("docker", opts...).CombinedOutput()
+	output, err := exec.Command("docker", opts...).CombinedOutput()
 	if err != nil {
-		return err
+		return nil, err
 	}
-	output <- out
 
-	return nil
+	return output, nil
 }
 
 func getCommandOptions(lang string, file *os.File) ([]string, error) {
