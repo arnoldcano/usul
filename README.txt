@@ -1,0 +1,24 @@
+Usul
+
+Requires:
+
+- Install virtualbox
+- Install docker toolbox
+
+Create docker machine in virtualbox:
+
+- Run 'docker-machine create --driver=virtualbox usul'
+
+Source the environment variables:
+
+- Run 'eval "$(docker-machine env usul)"'
+
+Build the docker image locally:
+
+- Run 'docker build -t usul - < Dockerfile'
+
+Sample Queries:
+
+curl -X POST -d "lang=python&code=print+%22hello+world%22" http://localhost:8080/compile
+curl -X POST -d "lang=ruby&code=puts+%22hello+world%22" http://localhost:8080/compile
+curl -X POST -d "lang=nodejs&code=console.log(+%22hello+world%22)" http://localhost:8080/compile

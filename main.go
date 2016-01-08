@@ -2,29 +2,34 @@ package main
 
 import (
 	"fmt"
+	"math/rand"
 	"net/http"
 	"os"
 	"os/exec"
 	"strings"
+	"time"
 )
 
-type command struct {
-	name     string
-	language string
-	file     string
-}
+const (
+	containerName = "usul"
+	compilerPath  = "/usr/bin"
+	filePath      = "code"
+	chars         = "abcdefghijklmnopqrstuvwxyz0123456789"
+)
 
 func compileHandler(w http.ResponseWriter, r *http.Request) {
-	language := r.FormValue("language")
-	file := r.FormValue("file")
+	lang := r.FormValue("lang")
+	code := r.FormValue("code")
+
+	file, err := saveToFile(lang, code)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	defer os.Remove(file.Name())
 
 	output := make(chan []byte)
-	command := &command{
-		name:     "docker",
-		language: language,
-		file:     file,
-	}
-	go run(command, output)
+	go run(lang, file, output)
 	out := <-output
 	close(output)
 
@@ -32,53 +37,95 @@ func compileHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write(out)
 }
 
-func run(command *command, output chan []byte) {
-	opts := getCommandOptions(command)
-	fmt.Printf("usul> docker %s\n", strings.Join(opts, " "))
-	out, _ := exec.Command(command.name, opts...).CombinedOutput()
-	output <- out
+func saveToFile(lang, code string) (*os.File, error) {
+	name := getFileName(lang)
+
+	file, err := os.Create(fmt.Sprintf("%s/%s", filePath, name))
+	if err != nil {
+		return nil, err
+	}
+
+	_, err = file.WriteString(code)
+	if err != nil {
+		return nil, err
+	}
+
+	return file, nil
 }
 
-func getCommandOptions(command *command) []string {
+func getFileName(lang string) string {
+	rand.Seed(time.Now().UTC().UnixNano())
+	bytes := make([]byte, 8)
+	for i := 0; i < 8; i++ {
+		bytes[i] = chars[rand.Intn(len(chars))]
+	}
+	name := string(bytes) + getExtension(lang)
+
+	return name
+}
+
+func getExtension(lang string) string {
+	var ext string
+	switch lang {
+	case "ruby":
+		ext = ".rb"
+	case "python":
+		ext = ".py"
+	case "nodejs":
+		ext = ".js"
+	}
+
+	return ext
+}
+
+func run(lang string, file *os.File, output chan []byte) error {
+	opts, err := getCommandOptions(lang, file)
+	if err != nil {
+		return err
+	}
+
+	fmt.Printf("%s> docker %s\n", containerName, strings.Join(opts, " "))
+
+	out, err := exec.Command("docker", opts...).CombinedOutput()
+	if err != nil {
+		return err
+	}
+	output <- out
+
+	return nil
+}
+
+func getCommandOptions(lang string, file *os.File) ([]string, error) {
+	path, err := getPath()
+	if err != nil {
+		return nil, err
+	}
+
 	opts := []string{
 		"run",
 		"--rm",
 		"-v",
-		fmt.Sprintf("%s:/code", getPath()),
-		"usul",
+		fmt.Sprintf("%s/%s:/%s", path, filePath, filePath),
+		containerName,
+		fmt.Sprintf("%s/%s", compilerPath, lang),
+		fmt.Sprintf("/%s", file.Name()),
 	}
-	opts = getCompilerOptions(command, opts)
 
-	return opts
+	return opts, nil
 }
 
-func getCompilerOptions(command *command, opts []string) []string {
-	switch command.language {
-	case "go":
-		opts = append(opts, fmt.Sprintf("/usr/bin/%s", "go"))
-		opts = append(opts, fmt.Sprintf("run"))
-	case "ruby":
-		opts = append(opts, fmt.Sprintf("/usr/bin/%s", "ruby"))
-	case "python":
-		opts = append(opts, fmt.Sprintf("/usr/bin/%s", "python"))
-	}
-	opts = append(opts, fmt.Sprintf("/code/%s", command.file))
-
-	return opts
-}
-
-func getPath() string {
+func getPath() (string, error) {
 	path, err := os.Getwd()
 	if err != nil {
-		panic(err)
+		return "", err
 	}
 
-	return path
+	return path, nil
 }
 
 func main() {
 	http.HandleFunc("/compile", compileHandler)
 
-	fmt.Println("Listing on port 8080...")
+	fmt.Println("Listening on port 8080...")
 	http.ListenAndServe(":8080", nil)
 }
