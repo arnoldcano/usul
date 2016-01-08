@@ -16,7 +16,7 @@ Source the environment variables:
 
 Build the docker image locally:
 
-- Run 'docker build -t usul - < Dockerfile'
+- Run 'docker build -t usul .'
 
 Build Usul:
 
