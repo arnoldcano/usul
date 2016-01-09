@@ -10,6 +10,7 @@ const (
 	CompilerPath  = "/usr/bin"
 	FilePath      = "code"
 	Chars         = "abcdefghijklmnopqrstuvwxyz0123456789"
+	Timeout       = 5
 )
 
 func CompileHandler(w http.ResponseWriter, r *http.Request) {

@@ -1,7 +1,9 @@
 package sandbox
 
 import (
+	"bytes"
 	"fmt"
+	"log"
 	"math/rand"
 	"os"
 	"os/exec"
@@ -49,13 +51,25 @@ func getExtension(lang string) string {
 }
 
 func compileTempFile(lang string, file *os.File) ([]byte, error) {
+	var output bytes.Buffer
 	opts, err := getOptions(lang, file)
 	if err != nil {
 		return nil, err
 	}
-	fmt.Printf("%s> docker %s\n", ContainerName, strings.Join(opts, " "))
-	output, _ := exec.Command("docker", opts...).CombinedOutput()
-	return output, nil
+	cmd := exec.Command("docker", opts...)
+	log.Printf("Running command 'docker %s'\n", strings.Join(opts, " "))
+	cmd.Stdout = &output
+	cmd.Stderr = &output
+	if err := cmd.Start(); err != nil {
+		return nil, err
+	}
+	timer := time.AfterFunc(Timeout*time.Second, func() {
+		log.Printf("Killing command 'docker %s'\n", strings.Join(opts, " "))
+		cmd.Process.Kill()
+	})
+	cmd.Wait()
+	timer.Stop()
+	return output.Bytes(), nil
 }
 
 func getOptions(lang string, file *os.File) ([]string, error) {
