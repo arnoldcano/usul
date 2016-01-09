@@ -1,4 +1,4 @@
-package sandbox
+package server
 
 import (
 	"net/http"
@@ -8,7 +8,7 @@ import (
 const (
 	ContainerName = "usul"
 	CompilerPath  = "/usr/bin"
-	FilePath      = "code"
+	FilePath      = "sandbox"
 	Chars         = "abcdefghijklmnopqrstuvwxyz0123456789"
 	Timeout       = 5
 )
