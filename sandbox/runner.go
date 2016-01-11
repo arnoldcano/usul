@@ -16,8 +16,8 @@ func runFile(language, fileName string) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	cmd := exec.Command("docker", opts...)
 	log.Printf("Running 'docker %s'\n", strings.Join(opts, " "))
+	cmd := exec.Command("docker", opts...)
 	cmd.Stdout = &output
 	cmd.Stderr = &output
 	if err := cmd.Start(); err != nil {
