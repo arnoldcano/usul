@@ -6,8 +6,8 @@ import (
 )
 
 const (
-	BinPath  = "/usr/bin"
-	FilePath = "files"
+	BinDir   = "/usr/bin"
+	FilesDir = "files"
 	Timeout  = 5
 )
 

@@ -8,7 +8,7 @@ import (
 )
 
 func saveFile(language, code string) (*os.File, error) {
-	file, err := os.Create(fmt.Sprintf("%s/%s", FilePath, getFileName(language)))
+	file, err := os.Create(fmt.Sprintf("%s/%s", FilesDir, getFileName(language)))
 	if err != nil {
 		return nil, err
 	}

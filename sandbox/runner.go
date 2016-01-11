@@ -37,14 +37,14 @@ func getOptions(language, fileName string) ([]string, error) {
 	if err != nil {
 		return nil, err
 	}
-	codePath := fmt.Sprintf("%s/%s", path, FilePath)
+	filesPath := fmt.Sprintf("%s/%s", path, FilesDir)
 	opts := []string{
 		"run",
 		"--rm",
 		"-v",
-		fmt.Sprintf("%s:/%s", codePath, FilePath),
+		fmt.Sprintf("%s:/%s", filesPath, FilesDir),
 		"usul",
-		fmt.Sprintf("%s/%s", BinPath, language),
+		fmt.Sprintf("%s/%s", BinDir, language),
 		fmt.Sprintf("/%s", fileName),
 	}
 	return opts, nil
