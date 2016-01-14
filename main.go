@@ -8,6 +8,7 @@ import (
 )
 
 func main() {
+	http.HandleFunc("/", sandbox.IndexHandler)
 	http.HandleFunc("/compile", sandbox.CompileHandler)
 
 	fmt.Println("Listening on port 8080...")
