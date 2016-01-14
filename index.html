@@ -1,33 +1,42 @@
-<html>
-<title>Usul</title>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Usul</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+  <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+</head>
 <body>
-  <h3>Usul - Docker Code Runner</h3>
-  <select id="language">
-    <option value="ruby">Ruby</option>
-    <option value="python">Python</option>
-    <option value="nodejs">Javascript</option>
-  </select>
-  <br>
-  <textarea id="code" rows="20" cols="80"></textarea>
-  <br>
-  <button id="send" type="button">Compile</button>
-  <hr>
-  <h4>Output</h4>
-  <p id="output"></p>
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-  <script type="text/javascript">
-    $('#send').on('click', function() {
-      var language = $('#language').val();
-      var code = $('#code').val();
-      var json = JSON.stringify({
-        language: language,
-        code: code,
-      });
+  <div class="container">
+    <h3>Usul - Docker Code Runner</h3>
+    <select id="language">
+      <option value="ruby">Ruby</option>
+      <option value="python">Python</option>
+      <option value="nodejs">Javascript</option>
+    </select>
+    <br>
+    <textarea id="code" rows="20" cols="80"></textarea>
+    <br>
+    <button id="send" type="button">Compile</button>
+    <hr>
+    <h4>Output</h4>
+    <p id="output"></p>
+    <script type="text/javascript">
+      $('#send').on('click', function() {
+        var language = $('#language').val();
+        var code = $('#code').val();
+        var json = JSON.stringify({
+          language: language,
+          code: code,
+        });
 
-      $.post("/compile", json, function(command) {
-        document.getElementById("output").innerHTML = command.output;
+        $.post("/compile", json, function(command) {
+          document.getElementById("output").innerHTML = command.output;
+        });
       });
-    });
-  </script>
+    </script>
+  </div>
 </body>
 </html>

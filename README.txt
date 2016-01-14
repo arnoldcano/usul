@@ -1,4 +1,10 @@
-Usul - "the strength of the base of the pillar"
+Usul - Docker Code Runner
+
+Supported Languages:
+
+- Ruby
+- Python
+- Javascript
 
 Requires:
 
@@ -26,8 +32,12 @@ Run Usul:
 
 - Run './usul'
 
-Sample curl queries:
+Try web form:
 
-curl -H "Content-Type: application/json" -d '{ "language": "ruby", "code": "puts \"hello+world\"" }' http://localhost:8080/compile
-curl -H "Content-Type: application/json" -d '{ "language": "python", "code": "print \"hello+world\"" }' http://localhost:8080/compile
-curl -H "Content-Type: application/json" -d '{ "language": "nodejs", "code": "console.log(\"hello+world\")" }' http://localhost:8080/compile
+- http://localhost:8080
+
+Try REST api:
+
+- Run `curl -H "Content-Type: application/json" -d '{ "language": "ruby", "code": "puts \"hello+world\"" }' http://localhost:8080/compile`
+- Run `curl -H "Content-Type: application/json" -d '{ "language": "python", "code": "print \"hello+world\"" }' http://localhost:8080/compile`
+- Run `curl -H "Content-Type: application/json" -d '{ "language": "nodejs", "code": "console.log(\"hello+world\")" }' http://localhost:8080/compile`
