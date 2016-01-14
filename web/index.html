@@ -27,14 +27,14 @@
       $('#send').on('click', function() {
         var language = $('#language').val();
         var code = $('#code').val();
-        var json = JSON.stringify({
-          language: language,
-          code: code,
-        });
+	var form = JSON.stringify({
+	  language: language,
+	  code: code
+	});
 
-        $.post("/compile", json, function(command) {
+	$.post("/compile", form, function(command) {
           document.getElementById("output").innerHTML = command.output;
-        });
+	});
       });
     </script>
   </div>

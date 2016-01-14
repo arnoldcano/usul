@@ -7,19 +7,19 @@ import (
 )
 
 func IndexHandler(w http.ResponseWriter, r *http.Request) {
-	file, err := ioutil.ReadFile("web/index.html")
+	page, err := ioutil.ReadFile("web/index.html")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	w.Write(file)
+	w.Write(page)
 }
 
 func CompileHandler(w http.ResponseWriter, r *http.Request) {
-	command := NewCompileCommand()
+	var command CompileCommand
 
-	err := json.NewDecoder(r.Body).Decode(command)
+	err := json.NewDecoder(r.Body).Decode(&command)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

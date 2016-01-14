@@ -19,29 +19,21 @@ const (
 )
 
 type CompileCommand struct {
-	Timeout  int    `json:"timeout"`
 	Language string `json:"language"`
 	Code     string `json:"code"`
 	Output   string `json:"output"`
 }
 
-func NewCompileCommand() *CompileCommand {
-	compile := &CompileCommand{
-		Timeout: Timeout,
-	}
-	return compile
-}
-
 func (c *CompileCommand) Run() error {
 	var output bytes.Buffer
 
-	fileName, err := c.getTempFile()
+	file, err := c.getTempFile()
 	if err != nil {
 		return err
 	}
-	defer os.Remove(fileName)
+	defer os.Remove(file.Name())
 
-	opts, err := c.getOptions(fileName)
+	opts, err := c.getOptions(file.Name())
 	if err != nil {
 		return err
 	}
@@ -66,18 +58,18 @@ func (c *CompileCommand) Run() error {
 	return nil
 }
 
-func (c *CompileCommand) getTempFile() (string, error) {
+func (c *CompileCommand) getTempFile() (*os.File, error) {
 	file, err := os.Create(fmt.Sprintf("%s/%s", FilesDir, c.getFileName()))
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
 	_, err = file.WriteString(c.Code)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
-	return file.Name(), nil
+	return file, nil
 }
 
 func (c *CompileCommand) getOptions(fileName string) ([]string, error) {
@@ -92,7 +84,7 @@ func (c *CompileCommand) getOptions(fileName string) ([]string, error) {
 		"--rm",
 		"-v",
 		fmt.Sprintf("%s:/%s", filesPath, FilesDir),
-		"usul",
+		ContainerName,
 		fmt.Sprintf("%s/%s", ContainerBinPath, c.Language),
 		fmt.Sprintf("/%s", fileName),
 	}
