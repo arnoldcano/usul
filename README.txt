@@ -1,4 +1,4 @@
-Usul - Docker Code Runner
+Usul - Sandbox Code Runner
 
 Supported Languages:
 

@@ -10,19 +10,23 @@
 </head>
 <body>
   <div class="container">
-    <h3>Usul - Docker Code Runner</h3>
-    <select id="language">
-      <option value="ruby">Ruby</option>
-      <option value="python">Python</option>
-      <option value="nodejs">Javascript</option>
-    </select>
-    <br>
-    <textarea id="code" rows="20" cols="80"></textarea>
-    <br>
-    <button id="send" type="button">Compile</button>
+    <h3>Usul - Sandbox Code Runner</h3>
+    <form action="/">
+      <div class="form-group">
+        <select id="language">
+          <option value="ruby">Ruby</option>
+          <option value="python">Python</option>
+          <option value="nodejs">Javascript</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <textarea id="code" rows="20" cols="80"></textarea>
+      </div>
+      <button id="send" type="button" class="btn btn-default">Compile</button>
+    </form>
     <hr>
     <h4>Output</h4>
-    <p id="output"></p>
+    <pre id="output"></pre>
     <script type="text/javascript">
       $('#send').on('click', function() {
         var language = $('#language').val();
