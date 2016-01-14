@@ -1,30 +1,27 @@
 package sandbox
 
 import (
+	"encoding/json"
 	"net/http"
-	"os"
 )
 
-const (
-	BinDir   = "/usr/bin"
-	FilesDir = "files"
-	Timeout  = 5
-)
+func CompileHandler(w http.ResponseWriter, r *http.Request) {
+	command := NewCompileCommand()
 
-func RunHandler(w http.ResponseWriter, r *http.Request) {
-	language := r.FormValue("language")
-	code := r.FormValue("code")
-	file, err := saveFile(language, code)
+	err := json.NewDecoder(r.Body).Decode(command)
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		panic(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
-	defer os.Remove(file.Name())
-	output, err := runFile(language, file.Name())
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		panic(err)
+
+	if err := command.Run(); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
+
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	w.WriteHeader(http.StatusOK)
-	w.Write(output)
+	if err := json.NewEncoder(w).Encode(command); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
 }

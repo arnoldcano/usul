@@ -28,6 +28,6 @@ Run Usul:
 
 Sample curl queries:
 
-curl -X POST -d "language=python&code=print+%22hello+world%22" http://localhost:8080/run
-curl -X POST -d "language=ruby&code=puts+%22hello+world%22" http://localhost:8080/run
-curl -X POST -d "language=nodejs&code=console.log(+%22hello+world%22)" http://localhost:8080/run
+curl -H "Content-Type: application/json" -d '{ "language": "ruby", "code": "puts \"hello+world\"" }' http://localhost:8080/compile
+curl -H "Content-Type: application/json" -d '{ "language": "python", "code": "print \"hello+world\"" }' http://localhost:8080/compile
+curl -H "Content-Type: application/json" -d '{ "language": "nodejs", "code": "console.log(\"hello+world\")" }' http://localhost:8080/compile
