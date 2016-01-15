@@ -32,11 +32,11 @@ Run Usul:
 
 - Run './usul'
 
-Try web form:
+Try web editor:
 
 - http://localhost:8080
 
-Try REST api:
+Try the api:
 
 - Run `curl -H "Content-Type: application/json" -d '{ "language": "ruby", "code": "puts \"hello+world\"" }' http://localhost:8080/compile`
 - Run `curl -H "Content-Type: application/json" -d '{ "language": "python", "code": "print \"hello+world\"" }' http://localhost:8080/compile`
