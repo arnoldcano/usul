@@ -7,40 +7,54 @@
   <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
   <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+  <script src="http://ajaxorg.github.io/ace-builds/src-min-noconflict/ace.js"></script>
+  <style type="text/css">
+    #editor { height: 300px; }
+  </style>
 </head>
 <body>
   <div class="container">
     <h3>Usul - Sandbox Code Runner</h3>
-    <form action="/">
-      <div class="form-group">
-        <select id="language">
-          <option value="ruby">Ruby</option>
-          <option value="python">Python</option>
-          <option value="nodejs">Javascript</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <textarea id="code" rows="20" cols="80"></textarea>
-      </div>
-      <button id="send" type="button" class="btn btn-default">Compile</button>
-    </form>
+    <div class="form-group">
+      <select id="language">
+        <option value="ruby">Ruby</option>
+        <option value="python">Python</option>
+        <option value="nodejs">Javascript</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <div id="editor"></div>
+    </div>
+    <button id="compile" type="button" class="btn btn-default">Compile</button>
     <hr>
     <h4>Output</h4>
     <pre id="output"></pre>
-    <script type="text/javascript">
-      $('#send').on('click', function() {
-        var language = $('#language').val();
-        var code = $('#code').val();
-	var form = JSON.stringify({
-	  language: language,
-	  code: code
-	});
-
-	$.post("/compile", form, function(command) {
-          document.getElementById("output").innerHTML = command.output;
-	});
-      });
-    </script>
   </div>
+  <script type="text/javascript">
+    var editor = ace.edit("editor");
+    editor.setTheme("ace/theme/github");
+
+    var setLanguage = function() {
+      var language = $('#language').val();
+      editor.getSession().setMode("ace/mode/" + language);
+    };
+
+    setLanguage();
+
+    $('#language').on('change', setLanguage);
+
+    $('#compile').on('click', function() {
+      var language = $('#language').val();
+      var code = editor.getValue() 
+      var form = JSON.stringify({
+        language: language,
+        code: code
+      });
+
+      $.post("/compile", form, function(command) {
+        document.getElementById("output").innerHTML = command.output;
+      });       
+    });
+  </script>
 </body>
 </html>

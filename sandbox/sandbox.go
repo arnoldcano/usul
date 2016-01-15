@@ -85,11 +85,25 @@ func (c *CompileCommand) getOptions(fileName string) ([]string, error) {
 		"-v",
 		fmt.Sprintf("%s:/%s", filesPath, FilesDir),
 		ContainerName,
-		fmt.Sprintf("%s/%s", ContainerBinPath, c.Language),
+		fmt.Sprintf("%s/%s", ContainerBinPath, c.getCompiler()),
 		fmt.Sprintf("/%s", fileName),
 	}
 
 	return opts, nil
+}
+
+func (c *CompileCommand) getCompiler() string {
+	var compiler string
+
+	switch c.Language {
+	case "javascript":
+		compiler = "nodejs"
+	default:
+		compiler = c.Language
+
+	}
+
+	return compiler
 }
 
 func (c *CompileCommand) getFileName() string {
