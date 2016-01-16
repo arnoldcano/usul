@@ -39,11 +39,7 @@
       editor.getSession().setMode("ace/mode/" + language);
     };
 
-    var setOutput = function(command) {
-      $('#output').html(command.output);
-    };
-
-    var compileCode = function() {
+    var postCompile = function() {
       var language = $('#language').val();
       var code = editor.getValue();
       var data = JSON.stringify({
@@ -51,13 +47,15 @@
         code: code
       });
 
-      $.post("/compile", data, setOutput);
+      $.post("/compile", data, function(command) {
+        $('#output').html(command.output);
+      });
     };
 
     setLanguage();
 
     $('#language').on('change', setLanguage);
-    $('#compile').on('click', compileCode);
+    $('#compile').on('click', postCompile);
   </script>
 </body>
 </html>
