@@ -19,7 +19,7 @@
       <select id="language">
         <option value="ruby">Ruby</option>
         <option value="python">Python</option>
-        <option value="nodejs">Javascript</option>
+        <option value="javascript">Javascript</option>
       </select>
     </div>
     <div class="form-group">
@@ -39,22 +39,25 @@
       editor.getSession().setMode("ace/mode/" + language);
     };
 
-    setLanguage();
+    var setOutput = function(command) {
+      $('#output').html(command.output);
+    };
 
-    $('#language').on('change', setLanguage);
-
-    $('#compile').on('click', function() {
+    var compileCode = function() {
       var language = $('#language').val();
-      var code = editor.getValue() 
-      var form = JSON.stringify({
+      var code = editor.getValue();
+      var data = JSON.stringify({
         language: language,
         code: code
       });
 
-      $.post("/compile", form, function(command) {
-        document.getElementById("output").innerHTML = command.output;
-      });       
-    });
+      $.post("/compile", data, setOutput);
+    };
+
+    setLanguage();
+
+    $('#language').on('change', setLanguage);
+    $('#compile').on('click', compileCode);
   </script>
 </body>
 </html>
