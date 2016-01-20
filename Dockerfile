@@ -10,9 +10,9 @@ RUN apt-get install -y nodejs
 
 ENV GOPATH /go
 WORKDIR /go/src/github.com/arnoldcano/usul
-ADD . /go/src/github.com/arnoldcano/usul/
+COPY . /go/src/github.com/arnoldcano/usul/
 RUN go build
 
-ENTRYPOINT ["go", "run", "main.go"]
+ENTRYPOINT ["./usul"]
 
 EXPOSE 8080
