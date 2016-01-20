@@ -13,6 +13,6 @@ WORKDIR /go/src/github.com/arnoldcano/usul
 COPY . /go/src/github.com/arnoldcano/usul/
 RUN go build
 
-ENTRYPOINT ["./usul"]
+CMD ["./usul"]
 
 EXPOSE 8080
