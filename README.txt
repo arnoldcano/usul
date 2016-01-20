@@ -14,30 +14,26 @@ Requires:
 
 Create docker machine in virtualbox:
 
-- Run 'docker-machine create --driver=virtualbox usul'
+- Run 'docker-machine create --driver=virtualbox dune'
 
 Source the environment variables:
 
-- Run 'eval "$(docker-machine env usul)"'
+- Run 'eval "$(docker-machine env dune)"'
 
 Build the docker image locally:
 
 - Run 'docker build -t usul .'
 
-Build Usul:
+Run usul:
 
-- Run 'go build'
+- Run 'docker run --rm -p 8080:8080 --name usul usul'
 
-Run Usul:
+Get docker ip address:
 
-- Run './usul'
-
-Try web editor:
-
-- http://localhost:8080
+- Run 'docker-machine ip dune'
 
 Try the api:
 
-- Run `curl -H "Content-Type: application/json" -d '{ "language": "ruby", "code": "puts \"hello+world\"" }' http://localhost:8080/compile`
-- Run `curl -H "Content-Type: application/json" -d '{ "language": "python", "code": "print \"hello+world\"" }' http://localhost:8080/compile`
-- Run `curl -H "Content-Type: application/json" -d '{ "language": "nodejs", "code": "console.log(\"hello+world\")" }' http://localhost:8080/compile`
+- Run `curl -H "Content-Type: application/json" -d '{ "language": "ruby", "code": "puts \"hello+world\"" }' http://$(docker-machine ip dune):8080/run`
+- Run `curl -H "Content-Type: application/json" -d '{ "language": "python", "code": "print \"hello+world\"" }' http://$(docker-machine ip dune):8080/run`
+- Run `curl -H "Content-Type: application/json" -d '{ "language": "js", "code": "console.log(\"hello+world\")" }' http://$(docker-machine ip dune):8080/run`

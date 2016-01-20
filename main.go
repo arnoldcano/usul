@@ -1,16 +1,15 @@
 package main
 
 import (
-	"fmt"
+	"log"
 	"net/http"
 
-	"github.com/arnoldcano/usul/sandbox"
+	"github.com/arnoldcano/usul/runner"
 )
 
 func main() {
-	http.HandleFunc("/", sandbox.IndexHandler)
-	http.HandleFunc("/compile", sandbox.CompileHandler)
+	http.HandleFunc("/run", runner.RunHandler)
 
-	fmt.Println("Listening on port 8080...")
+	log.Println("Listening on port 8080")
 	http.ListenAndServe(":8080", nil)
 }
