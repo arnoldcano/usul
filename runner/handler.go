@@ -4,8 +4,6 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
-	"os"
-	"path/filepath"
 )
 
 const Timeout = 5
@@ -35,7 +33,7 @@ func RunHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer os.RemoveAll(filepath.Dir(f.Name()))
+	defer removeTempFile(f)
 
 	w2.Output, err = runFile(r2.Language, f)
 	if err != nil {
@@ -48,5 +46,4 @@ func RunHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 	log.Printf("Sent response to %s", r.UserAgent())
-	log.Printf("Removed temp dir %s", filepath.Dir(f.Name()))
 }

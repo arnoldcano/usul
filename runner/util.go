@@ -3,7 +3,6 @@ package runner
 import (
 	"bytes"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"math/rand"
 	"os"
@@ -32,12 +31,7 @@ func runFile(lang string, f *os.File) (string, error) {
 }
 
 func saveTempFile(lang, code string) (*os.File, error) {
-	d, err := ioutil.TempDir("", "")
-	if err != nil {
-		return nil, err
-	}
-
-	f, err := os.Create(fmt.Sprintf("%s/%s", d, getFileName(lang)))
+	f, err := os.Create(fmt.Sprintf("%s/%s", os.TempDir(), getFileName(lang)))
 	if err != nil {
 		return nil, err
 	}
@@ -49,6 +43,11 @@ func saveTempFile(lang, code string) (*os.File, error) {
 	log.Printf("Saved temp file %s", f.Name())
 
 	return f, nil
+}
+
+func removeTempFile(f *os.File) {
+	os.Remove(f.Name())
+	log.Printf("Removed temp file %s", f.Name())
 }
 
 func getFileName(lang string) string {
