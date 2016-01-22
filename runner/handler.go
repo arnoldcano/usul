@@ -21,6 +21,8 @@ func RunHandler(w http.ResponseWriter, r *http.Request) {
 	var r2 Request
 	var w2 Response
 
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+
 	err := json.NewDecoder(r.Body).Decode(&r2)
 	if err != nil {
 		writeError(w, err)
@@ -41,7 +43,6 @@ func RunHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	if err := json.NewEncoder(w).Encode(w2); err != nil {
 		writeError(w, err)
 	}
