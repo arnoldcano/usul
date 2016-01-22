@@ -23,27 +23,35 @@ func RunHandler(w http.ResponseWriter, r *http.Request) {
 
 	err := json.NewDecoder(r.Body).Decode(&r2)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		writeError(w, err)
 		return
 	}
-	log.Printf("Received request from %s", r.UserAgent())
+	log.Printf("Received request from %s", r.RemoteAddr)
 
 	f, err := saveTempFile(r2.Language, r2.Code)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		writeError(w, err)
 		return
 	}
 	defer removeTempFile(f)
 
 	w2.Output, err = runFile(r2.Language, f)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		writeError(w, err)
 		return
 	}
 
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	if err := json.NewEncoder(w).Encode(w2); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		writeError(w, err)
 	}
-	log.Printf("Sent response to %s", r.UserAgent())
+	log.Printf("Sent response to %s", r.RemoteAddr)
+}
+
+func writeError(w http.ResponseWriter, e error) {
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	w.WriteHeader(http.StatusInternalServerError)
+	if err := json.NewEncoder(w).Encode(e); err != nil {
+		panic(err)
+	}
 }
