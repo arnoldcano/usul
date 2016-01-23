@@ -8,9 +8,11 @@ RUN apt-get install -y ruby
 RUN apt-get install -y python
 RUN apt-get install -y nodejs
 
-ENV GOPATH /go
-WORKDIR /go/src/github.com/arnoldcano/usul
-COPY . /go/src/github.com/arnoldcano/usul/
+RUN useradd -m usul
+
+ENV GOPATH /home/usul/go
+WORKDIR /home/usul/go/src/github.com/arnoldcano/usul
+COPY . /home/usul/go/src/github.com/arnoldcano/usul
 RUN go build
 
 CMD ["./usul"]
