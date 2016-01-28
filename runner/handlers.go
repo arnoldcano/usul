@@ -14,7 +14,8 @@ type Request struct {
 }
 
 type Response struct {
-	Output string `json:"output"`
+	Output   string `json:"output"`
+	Analysis string `json:"analysis"`
 }
 
 func RunHandler(w http.ResponseWriter, r *http.Request) {
@@ -37,37 +38,7 @@ func RunHandler(w http.ResponseWriter, r *http.Request) {
 	defer removeTempFile(f)
 
 	w2.Output, err = runFile(r2.Language, f)
-	if err != nil {
-		writeError(w, err)
-		return
-	}
-
-	if err := json.NewEncoder(w).Encode(w2); err != nil {
-		writeError(w, err)
-	}
-	log.Printf("Sent response to %s", r.RemoteAddr)
-}
-
-func AnalyzeHandler(w http.ResponseWriter, r *http.Request) {
-	var r2 Request
-	var w2 Response
-
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-
-	if err := json.NewDecoder(r.Body).Decode(&r2); err != nil {
-		writeError(w, err)
-		return
-	}
-	log.Printf("Received request from %s", r.RemoteAddr)
-
-	f, err := saveTempFile(r2.Language, r2.Code)
-	if err != nil {
-		writeError(w, err)
-		return
-	}
-	defer removeTempFile(f)
-
-	w2.Output, err = analyzeFile(r2.Language, f)
+	w2.Analysis, err = analyzeFile(r2.Language, f)
 	if err != nil {
 		writeError(w, err)
 		return
