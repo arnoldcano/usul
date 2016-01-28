@@ -30,6 +30,26 @@ func runFile(lang string, f *os.File) (string, error) {
 	return b.String(), nil
 }
 
+func analyzeFile(lang string, f *os.File) (string, error) {
+	var b bytes.Buffer
+
+	c := exec.Command(getAnalyzer(lang), []string{f.Name()}...)
+	c.Stdout = &b
+	c.Stderr = &b
+	if err := c.Start(); err != nil {
+		return "", err
+	}
+	log.Printf("Analyzing temp file %s", f.Name())
+	t := time.AfterFunc(Timeout*time.Second, func() {
+		log.Printf("Process %d timed out", c.Process.Pid)
+		c.Process.Kill()
+	})
+	c.Wait()
+	t.Stop()
+
+	return b.String(), nil
+}
+
 func saveTempFile(lang, code string) (*os.File, error) {
 	f, err := os.Create(fmt.Sprintf("%s/%s", os.TempDir(), getFileName(lang)))
 	if err != nil {
@@ -60,6 +80,22 @@ func getFileName(lang string) string {
 	n := fmt.Sprintf("%s.%s", string(t), getFileExtension(lang))
 
 	return n
+}
+
+func getAnalyzer(lang string) string {
+	var a string
+
+	switch lang {
+	case "ruby":
+		a = "rubocop"
+	case "python":
+		a = "pylint"
+	case "js":
+		a = "jshint"
+	}
+
+	return a
+
 }
 
 func getFileExtension(lang string) string {
